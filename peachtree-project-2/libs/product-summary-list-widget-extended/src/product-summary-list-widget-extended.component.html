@@ -1,0 +1,68 @@
+<bb-product-summary-list-widget (selectedAccount)="onSelectedAccountOutput($event)"></bb-product-summary-list-widget>
+
+<ng-template bbProductSummaryHeaderCustomizable let-hostRef let-items="context">
+    <div *ngIf="items.total" class="row py-4">
+        <div class="col p-0">
+            <h4 class="m-0 ml-3 text-dark" i18n="Total Balance label|Label for a product summary widget header component@@product-summary-header.label.total-balance">
+                Total Balance
+            </h4>
+        </div>
+        <div class="col">
+            <div class="h5 text-right m-0 mr-4 text-dark">
+                <bb-amount-ui [currency]="items.total.currency" [amount]="items.total.aggregatedBalance">
+                </bb-amount-ui>
+            </div>
+        </div>
+    </div>
+    <hr class="m-0" />
+</ng-template>
+
+<ng-template bbProductSummaryBodyCustomizable let-hostRef let-items="context">
+    <ng-container *ngFor="let productKind of items.productKinds">
+        <div class="mt-4 mb-2 d-flex justify-content-between">
+            <div class="d-flex align-items-center m-0">
+                <span [attr.data-role]="productKind.name" class="text-secondary">
+                    {{ productKind.name }}
+                </span>
+            </div>
+            <div class="d-flex justify-content-end align-items-center">
+                <ng-container *ngIf="productKind.aggregatedBalance">
+                    <span class="mr-4 mb-0 text-secondary">
+                        <bb-amount-ui
+                            data-role="current-account-total-amount"
+                            [currency]="productKind.currency"
+                            [amount]="productKind.aggregatedBalance">
+                        </bb-amount-ui>
+                    </span>
+                </ng-container>
+            </div>
+        </div>
+        <div *ngFor="let product of productKind.products" class="border rounded mt-1">
+            <div *ngIf="product.kind === 'creditCards'; else bbProductBasicItem">
+                <pt-credit-card-item-ui (click)="hostRef.selectAccount(product.id)" role="button"
+                    [title]="product.name"
+                    [amount]="product.bookedBalance"
+                    [currency]="product.currency"
+                    [availableBalance]="product.availableBalance"
+                    [creditLimit]="product.creditLimit"
+                >
+
+                </pt-credit-card-item-ui>
+            </div>
+            <ng-template #bbProductBasicItem>
+                <bb-product-item-basic-account-ui (click)="hostRef.selectAccount(product.id)" role="button"
+                    [title]="product.name"
+                    [amount]="product.bookedBalance"
+                    [productNumber]="product.productNumber"
+                    [currency]="product.currency"
+                    [highlight]="false"
+                    [active]="false"
+                    balanceLabel="Available balance"
+                    i18n-balanceLabel="
+                    Amount label@@product-item-base-account.amount.label
+                    "
+                ></bb-product-item-basic-account-ui>
+            </ng-template>
+        </div>
+    </ng-container>
+</ng-template>
